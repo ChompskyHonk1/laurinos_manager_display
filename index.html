@@ -154,8 +154,8 @@
         .main-content {
             flex: 1;
             display: grid;
-            grid-template-columns: 1fr 380px;
-            gap: 24px;
+            grid-template-columns: 1fr 480px;
+            gap: 32px;
             min-height: 0;
         }
 
@@ -245,12 +245,12 @@
         .calendar-day {
             background: var(--background);
             border-radius: var(--radius-medium);
-            padding: 8px;
+            padding: 12px;
             display: flex;
             flex-direction: column;
             transition: all 0.2s ease;
             border: 2px solid transparent;
-            min-height: 70px;
+            min-height: 85px;
         }
 
         .calendar-day:hover {
@@ -267,10 +267,10 @@
         }
 
         .day-number {
-            font-size: 1rem;
+            font-size: 1.3rem;
             font-weight: 600;
             color: var(--muted-text);
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
         .calendar-day.today .day-number {
@@ -279,9 +279,9 @@
         }
 
         .manager-name {
-            font-size: 0.9rem;
+            font-size: 1.15rem;
             color: var(--text-primary);
-            font-weight: 600;
+            font-weight: 700;
             line-height: 1.2;
             background: linear-gradient(135deg, var(--tertiary-dark), var(--blue-pastel));
             -webkit-background-clip: text;
@@ -546,7 +546,7 @@
 
     <script>
         const CONFIG = {
-            CALENDAR_DB_ID: '2f042fe322648076946ce639f24e2086',
+            CALENDAR_DB_ID: '2f042fe32264805caeced964c5c1228e',
             NOTES_DB_ID: '2f042fe32264809297d6f75dfd050fa0',
             REFRESH_INTERVAL: 300000,
             API_ENDPOINT: '/api/notion'
