@@ -17,21 +17,35 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const { databaseId } = req.body;
+    // Log incoming request for debugging
+    console.log('Request body:', req.body);
+
+    const { databaseId } = req.body || {};
 
     if (!databaseId) {
-        return res.status(400).json({ error: 'Missing databaseId in request body' });
+        console.error('Missing databaseId. Received body:', req.body);
+        return res.status(400).json({ 
+            error: 'Missing databaseId in request body',
+            receivedBody: req.body 
+        });
     }
 
     const NOTION_TOKEN = process.env.NOTION_TOKEN;
 
     if (!NOTION_TOKEN) {
         console.error('NOTION_TOKEN environment variable is not set');
-        return res.status(500).json({ error: 'Server configuration error' });
+        return res.status(500).json({ error: 'Server configuration error - missing NOTION_TOKEN' });
     }
 
+    // Log that we're attempting the request (don't log the full token!)
+    console.log('Attempting Notion API request for database:', databaseId);
+    console.log('Token starts with:', NOTION_TOKEN.substring(0, 10) + '...');
+
     try {
-        const response = await fetch(`https://api.notion.com/v1/databases/${databaseId}/query`, {
+        const notionUrl = `https://api.notion.com/v1/databases/${databaseId}/query`;
+        console.log('Fetching:', notionUrl);
+
+        const response = await fetch(notionUrl, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${NOTION_TOKEN}`,
@@ -47,15 +61,21 @@ export default async function handler(req, res) {
             return res.status(response.status).json({ 
                 error: 'Notion API error', 
                 status: response.status,
-                details: errorText 
+                details: errorText,
+                databaseId: databaseId
             });
         }
 
         const data = await response.json();
+        console.log('Success! Got', data.results?.length || 0, 'results');
         return res.status(200).json(data);
 
     } catch (error) {
         console.error('Error fetching from Notion:', error);
-        return res.status(500).json({ error: 'Failed to fetch from Notion', details: error.message });
+        return res.status(500).json({ 
+            error: 'Failed to fetch from Notion', 
+            details: error.message,
+            databaseId: databaseId
+        });
     }
 }
