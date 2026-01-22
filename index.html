@@ -343,15 +343,18 @@
             position: relative;
         }
 
-        /* Team Note Card */
+        /* Team Note Card - Expandable for longer messages */
         .note-card {
             background: var(--card-background);
             border-radius: var(--radius-xl);
-            padding: 20px;
+            padding: 20px 24px;
             box-shadow: var(--shadow-medium);
             border-left: 4px solid var(--highlight);
             transition: background 0.3s ease;
-            flex-shrink: 0;
+            flex: 1;
+            min-height: 120px;
+            max-height: 300px;
+            overflow-y: auto;
         }
 
         .note-card .label {
@@ -359,14 +362,16 @@
             text-transform: uppercase;
             letter-spacing: 0.15em;
             color: var(--muted-text);
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         .note-card .note-text {
-            font-size: 1.05rem;
+            font-size: 1.1rem;
             color: var(--text-primary);
-            line-height: 1.5;
+            line-height: 1.6;
             font-style: italic;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         .note-card .note-text.empty {
@@ -377,57 +382,57 @@
         .note-card .note-author {
             font-size: 0.9rem;
             color: var(--secondary-dark);
-            margin-top: 10px;
+            margin-top: 12px;
             font-weight: 500;
         }
 
-        /* Quote Card */
+        /* Quote Card - Compact */
         .quote-card {
             background: var(--card-background);
             border-radius: var(--radius-xl);
-            padding: 20px;
+            padding: 16px 20px;
             box-shadow: var(--shadow-medium);
             border: 1px solid var(--border);
             position: relative;
-            flex: 1;
+            flex-shrink: 0;
+            min-height: 100px;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            min-height: 0;
             transition: background 0.3s ease, border-color 0.3s ease;
         }
 
         .quote-mark {
             font-family: 'Playfair Display', serif;
-            font-size: 4rem;
+            font-size: 2.5rem;
             color: var(--accent);
             line-height: 1;
             position: absolute;
-            top: 10px;
-            left: 16px;
+            top: 8px;
+            left: 12px;
         }
 
         .quote-card .label {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 0.15em;
             color: var(--muted-text);
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
 
         .quote-text {
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: var(--text-primary);
-            line-height: 1.5;
+            line-height: 1.4;
             font-style: italic;
-            padding-left: 20px;
+            padding-left: 16px;
         }
 
         .quote-author {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--secondary-dark);
-            margin-top: 12px;
-            padding-left: 20px;
+            margin-top: 8px;
+            padding-left: 16px;
             font-weight: 500;
         }
 
