@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+Pro:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
+            /* Laurino Tavern Brand Colors - Light Mode */
             --primary-dark: #8B7355;
             --secondary-dark: #A68B6B;
             --tertiary-dark: #2C5F7C;
@@ -19,163 +20,294 @@
             --card-background: #ffffff;
             --border: #e0e0e0;
             --text: #8B7355;
+            --text-primary: #5a4a3a;
             --muted-text: #A68B6B;
             --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.08);
             --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.12);
             --shadow-heavy: 0 8px 32px rgba(0, 0, 0, 0.16);
+            --radius-small: 6px;
             --radius-medium: 8px;
             --radius-large: 12px;
             --radius-xl: 16px;
         }
+
+        /* Dark Mode Colors */
+        [data-theme="dark"] {
+            --primary-dark: #D4A574;
+            --secondary-dark: #A68B6B;
+            --tertiary-dark: #7FA7B8;
+            --primary-light: #1a1a1a;
+            --blue-pastel: #5a8a9a;
+            --lighter-blue: #4a7a8a;
+            --background: #1a1612;
+            --accent: #2a2420;
+            --highlight: #D4A574;
+            --card-background: #252018;
+            --border: #3a3530;
+            --text: #E8DFD3;
+            --text-primary: #ffffff;
+            --muted-text: #A68B6B;
+            --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.3);
+            --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.4);
+            --shadow-heavy: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
         body {
             font-family: 'Source Sans Pro', sans-serif;
             background: var(--background);
             color: var(--text);
-            min-height: 100vh;
-            padding: 40px;
+            height: 100vh;
+            padding: 24px 32px;
             -webkit-font-smoothing: antialiased;
+            transition: background 0.3s ease, color 0.3s ease;
+            display: flex;
+            flex-direction: column;
         }
-        .container { max-width: 1600px; margin: 0 auto; }
+
+        .container {
+            max-width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header - Compact for monitor */
         .header {
             text-align: center;
-            margin-bottom: 40px;
-            padding-bottom: 30px;
+            padding-bottom: 16px;
             border-bottom: 2px solid var(--accent);
+            margin-bottom: 20px;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
+
+        .header-left {
+            text-align: left;
+        }
+
         .header h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 3.5rem;
+            font-size: 2.4rem;
             font-weight: 700;
             color: var(--primary-dark);
-            letter-spacing: 0.05em;
-            margin-bottom: 8px;
+            letter-spacing: 0.03em;
+            line-height: 1.1;
         }
+
         .header .subtitle {
-            font-size: 1.1rem;
+            font-size: 0.95rem;
             color: var(--tertiary-dark);
-            letter-spacing: 0.15em;
+            letter-spacing: 0.12em;
             text-transform: uppercase;
+            margin-top: 4px;
         }
+
+        .header-right {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
         .current-date {
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             color: var(--secondary-dark);
-            margin-top: 15px;
+            font-weight: 500;
         }
-        .main-grid {
+
+        .theme-toggle {
+            background: var(--card-background);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 16px;
+            border-radius: var(--radius-medium);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-family: 'Source Sans Pro', sans-serif;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .theme-toggle:hover {
+            background: var(--tertiary-dark);
+            color: white;
+            border-color: var(--tertiary-dark);
+        }
+
+        .theme-icon {
+            font-size: 1rem;
+        }
+
+        /* Main Layout - Optimized for 16:9 monitor */
+        .main-content {
+            flex: 1;
             display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 40px;
-            align-items: start;
+            grid-template-columns: 1fr 380px;
+            gap: 24px;
+            min-height: 0;
         }
+
+        /* Calendar Section */
         .calendar-section {
             background: var(--card-background);
             border-radius: var(--radius-xl);
-            padding: 30px;
+            padding: 20px 24px;
             box-shadow: var(--shadow-medium);
             border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            transition: background 0.3s ease, border-color 0.3s ease;
         }
+
         .section-title {
             font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             color: var(--primary-dark);
-            margin-bottom: 25px;
+            margin-bottom: 16px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
+            flex-shrink: 0;
         }
+
         .section-title::before {
             content: '';
             width: 4px;
-            height: 28px;
+            height: 24px;
             background: linear-gradient(180deg, var(--tertiary-dark) 0%, var(--blue-pastel) 100%);
             border-radius: 2px;
         }
+
         .calendar-nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
+            flex-shrink: 0;
         }
-        .calendar-month { font-size: 1.4rem; font-weight: 600; color: var(--primary-dark); }
-        .nav-buttons { display: flex; gap: 10px; }
+
+        .calendar-month {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .nav-buttons { display: flex; gap: 8px; }
+
         .nav-btn {
             background: var(--background);
             border: 1px solid var(--border);
             color: var(--secondary-dark);
-            padding: 8px 16px;
+            padding: 6px 14px;
             border-radius: var(--radius-medium);
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-family: 'Source Sans Pro', sans-serif;
             transition: all 0.2s ease;
         }
+
         .nav-btn:hover {
             background: var(--tertiary-dark);
-            color: var(--primary-light);
+            color: white;
             border-color: var(--tertiary-dark);
         }
+
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
+            gap: 6px;
+            flex: 1;
+            align-content: start;
         }
+
         .calendar-header {
             text-align: center;
-            padding: 12px 8px;
+            padding: 8px 4px;
             font-weight: 600;
             color: var(--tertiary-dark);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.08em;
         }
+
         .calendar-day {
-            aspect-ratio: 1.2;
             background: var(--background);
-            border-radius: var(--radius-large);
-            padding: 10px;
+            border-radius: var(--radius-medium);
+            padding: 8px;
             display: flex;
             flex-direction: column;
             transition: all 0.2s ease;
-            border: 1px solid transparent;
-            min-height: 90px;
+            border: 2px solid transparent;
+            min-height: 70px;
         }
+
         .calendar-day:hover {
             background: var(--accent);
             border-color: var(--border);
         }
-        .calendar-day.other-month { opacity: 0.35; }
+
+        .calendar-day.other-month { opacity: 0.3; }
+
         .calendar-day.today {
-            border: 2px solid var(--tertiary-dark);
-            background: rgba(44, 95, 124, 0.08);
+            border: 2px solid var(--highlight);
+            background: rgba(212, 165, 116, 0.15);
             box-shadow: var(--shadow-light);
         }
+
         .day-number {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
-            color: var(--secondary-dark);
-            margin-bottom: 6px;
+            color: var(--muted-text);
+            margin-bottom: 4px;
         }
+
         .calendar-day.today .day-number {
-            color: var(--tertiary-dark);
+            color: var(--highlight);
             font-weight: 700;
         }
+
         .manager-name {
-            font-size: 0.95rem;
-            color: var(--primary-dark);
+            font-size: 0.9rem;
+            color: var(--text-primary);
             font-weight: 600;
-            line-height: 1.3;
+            line-height: 1.2;
+            background: linear-gradient(135deg, var(--tertiary-dark), var(--blue-pastel));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
-        .sidebar { display: flex; flex-direction: column; gap: 25px; }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Today's Manager Card */
         .today-card {
             background: linear-gradient(135deg, var(--tertiary-dark) 0%, var(--blue-pastel) 100%);
             border-radius: var(--radius-xl);
-            padding: 35px 30px;
+            padding: 28px 24px;
             text-align: center;
             box-shadow: var(--shadow-heavy);
             position: relative;
             overflow: hidden;
+            flex-shrink: 0;
         }
+
         .today-card::before {
             content: '';
             position: absolute;
@@ -185,135 +317,184 @@
             height: 100%;
             background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
         }
+
         .today-card .label {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 0.2em;
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 12px;
+            color: rgba(255,255,255,0.85);
+            margin-bottom: 8px;
             position: relative;
         }
+
         .today-card .manager {
             font-family: 'Playfair Display', serif;
-            font-size: 3.5rem;
+            font-size: 3rem;
             font-weight: 700;
-            color: var(--primary-light);
+            color: white;
             position: relative;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
+
         .today-card .date {
             font-size: 1rem;
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(255,255,255,0.9);
             margin-top: 10px;
             position: relative;
         }
+
+        /* Team Note Card */
         .note-card {
             background: var(--card-background);
             border-radius: var(--radius-xl);
-            padding: 25px;
+            padding: 20px;
             box-shadow: var(--shadow-medium);
-            border: 1px solid var(--border);
             border-left: 4px solid var(--highlight);
+            transition: background 0.3s ease;
+            flex-shrink: 0;
         }
-        .note-card .section-title {
-            font-size: 1.3rem;
-            margin-bottom: 15px;
-        }
-        .note-card .section-title::before { background: var(--highlight); }
-        .note-content {
-            font-size: 1.15rem;
-            line-height: 1.7;
-            color: var(--text);
-        }
-        .note-content.empty {
+
+        .note-card .label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
             color: var(--muted-text);
+            margin-bottom: 10px;
+        }
+
+        .note-card .note-text {
+            font-size: 1.05rem;
+            color: var(--text-primary);
+            line-height: 1.5;
             font-style: italic;
         }
-        .note-author {
-            margin-top: 15px;
+
+        .note-card .note-text.empty {
+            color: var(--muted-text);
+            font-style: normal;
+        }
+
+        .note-card .note-author {
             font-size: 0.9rem;
             color: var(--secondary-dark);
-            font-weight: 600;
+            margin-top: 10px;
+            font-weight: 500;
         }
+
+        /* Quote Card */
         .quote-card {
             background: var(--card-background);
             border-radius: var(--radius-xl);
-            padding: 25px;
+            padding: 20px;
             box-shadow: var(--shadow-medium);
             border: 1px solid var(--border);
             position: relative;
-            overflow: hidden;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 0;
+            transition: background 0.3s ease, border-color 0.3s ease;
         }
-        .quote-card::before {
-            content: '"';
-            position: absolute;
-            top: -10px;
-            left: 15px;
+
+        .quote-mark {
             font-family: 'Playfair Display', serif;
-            font-size: 8rem;
+            font-size: 4rem;
             color: var(--accent);
             line-height: 1;
+            position: absolute;
+            top: 10px;
+            left: 16px;
         }
-        .quote-card .section-title {
-            font-size: 1.3rem;
-            margin-bottom: 15px;
-            position: relative;
-        }
-        .quote-card .section-title::before {
-            background: linear-gradient(180deg, var(--blue-pastel) 0%, var(--lighter-blue) 100%);
-        }
-        .quote-text {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.2rem;
-            line-height: 1.7;
-            color: var(--primary-dark);
-            font-style: italic;
-            position: relative;
-            z-index: 1;
-        }
-        .quote-author {
-            margin-top: 18px;
-            font-size: 0.95rem;
-            color: var(--tertiary-dark);
-            text-align: right;
-            font-weight: 600;
-            position: relative;
-            z-index: 1;
-        }
-        .loading { color: var(--muted-text); font-style: italic; }
-        .last-updated {
-            text-align: center;
-            margin-top: 35px;
-            font-size: 0.85rem;
+
+        .quote-card .label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
             color: var(--muted-text);
-            padding-top: 20px;
-            border-top: 1px solid var(--accent);
+            margin-bottom: 12px;
         }
+
+        .quote-text {
+            font-size: 1rem;
+            color: var(--text-primary);
+            line-height: 1.5;
+            font-style: italic;
+            padding-left: 20px;
+        }
+
+        .quote-author {
+            font-size: 0.9rem;
+            color: var(--secondary-dark);
+            margin-top: 12px;
+            padding-left: 20px;
+            font-weight: 500;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding-top: 12px;
+            margin-top: auto;
+            font-size: 0.8rem;
+            color: var(--muted-text);
+            flex-shrink: 0;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #4CAF50;
+            border-radius: 50%;
+            margin-right: 6px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Responsive adjustments for smaller monitors */
+        @media (max-width: 1400px) {
+            .main-content {
+                grid-template-columns: 1fr 340px;
+            }
+            .today-card .manager {
+                font-size: 2.5rem;
+            }
+        }
+
         @media (max-width: 1200px) {
-            .main-grid { grid-template-columns: 1fr; }
-            .sidebar { flex-direction: row; flex-wrap: wrap; }
-            .sidebar > * { flex: 1; min-width: 300px; }
-        }
-        @media (max-width: 768px) {
-            body { padding: 20px; }
-            .header h1 { font-size: 2.5rem; }
-            .calendar-day { min-height: 70px; padding: 6px; }
-            .day-number { font-size: 0.9rem; }
-            .manager-name { font-size: 0.8rem; }
-            .today-card .manager { font-size: 2.5rem; }
-            .sidebar { flex-direction: column; }
-            .sidebar > * { min-width: 100%; }
+            body { padding: 16px 20px; }
+            .main-content {
+                grid-template-columns: 1fr 300px;
+                gap: 16px;
+            }
+            .header h1 { font-size: 2rem; }
+            .today-card .manager { font-size: 2.2rem; }
+            .calendar-day { min-height: 60px; padding: 6px; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header class="header">
-            <h1>Laurino Tavern</h1>
-            <div class="subtitle">Manager on Duty</div>
-            <div class="current-date" id="currentDate"></div>
+            <div class="header-left">
+                <h1>Laurino Tavern</h1>
+                <div class="subtitle">Manager on Duty</div>
+            </div>
+            <div class="header-right">
+                <div class="current-date" id="currentDate"></div>
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <span class="theme-icon" id="themeIcon">🌙</span>
+                    <span id="themeText">Dark Mode</span>
+                </button>
+            </div>
         </header>
-        <div class="main-grid">
+
+        <main class="main-content">
             <section class="calendar-section">
                 <h2 class="section-title">Schedule</h2>
                 <div class="calendar-nav">
@@ -334,26 +515,35 @@
                     <div class="calendar-header">Sat</div>
                 </div>
             </section>
+
             <aside class="sidebar">
                 <div class="today-card">
                     <div class="label">Today's Manager</div>
                     <div class="manager" id="todayManager">--</div>
                     <div class="date" id="todayDate"></div>
                 </div>
+
                 <div class="note-card">
-                    <h3 class="section-title">📋 Team Note</h3>
-                    <div class="note-content" id="managerNote"><span class="loading">Loading...</span></div>
+                    <div class="label">📋 Team Note</div>
+                    <div class="note-text" id="managerNote">Loading...</div>
                     <div class="note-author" id="noteAuthor"></div>
                 </div>
+
                 <div class="quote-card">
-                    <h3 class="section-title">💡 Quote of the Day</h3>
+                    <span class="quote-mark">"</span>
+                    <div class="label">💡 Daily Inspiration</div>
                     <div class="quote-text" id="quoteText"></div>
                     <div class="quote-author" id="quoteAuthor"></div>
                 </div>
             </aside>
-        </div>
-        <div class="last-updated">Last updated: <span id="lastUpdated">--</span> • Auto-refreshes every 5 minutes</div>
+        </main>
+
+        <footer class="footer">
+            <span class="status-dot"></span>
+            Auto-refresh enabled · Last updated: <span id="lastUpdated">--</span>
+        </footer>
     </div>
+
     <script>
         const CONFIG = {
             CALENDAR_DB_ID: '2f042fe322648076946ce639f24e2086',
@@ -364,195 +554,116 @@
 
         const QUOTES = [
             { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
-            { text: "Success is not final, failure is not fatal: it is the courage to continue that counts.", author: "Winston Churchill" },
-            { text: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" },
-            { text: "The future belongs to those who believe in the beauty of their dreams.", author: "Eleanor Roosevelt" },
-            { text: "It does not matter how slowly you go as long as you do not stop.", author: "Confucius" },
-            { text: "Everything you've ever wanted is on the other side of fear.", author: "George Addair" },
-            { text: "The best time to plant a tree was 20 years ago. The second best time is now.", author: "Chinese Proverb" },
-            { text: "Push yourself, because no one else is going to do it for you.", author: "Unknown" },
-            { text: "Great things never come from comfort zones.", author: "Unknown" },
-            { text: "Success doesn't just find you. You have to go out and get it.", author: "Unknown" },
-            { text: "The harder you work for something, the greater you'll feel when you achieve it.", author: "Unknown" },
-            { text: "Wake up with determination. Go to bed with satisfaction.", author: "Unknown" },
-            { text: "Do something today that your future self will thank you for.", author: "Sean Patrick Flanery" },
-            { text: "Don't wait for opportunity. Create it.", author: "Unknown" },
-            { text: "The only limit to our realization of tomorrow is our doubts of today.", author: "Franklin D. Roosevelt" },
-            { text: "Creativity is intelligence having fun.", author: "Albert Einstein" },
-            { text: "Quality is not an act, it is a habit.", author: "Aristotle" },
-            { text: "Leadership is not about being in charge. It's about taking care of those in your charge.", author: "Simon Sinek" },
-            { text: "The way to get started is to quit talking and begin doing.", author: "Walt Disney" },
-            { text: "I find that the harder I work, the more luck I seem to have.", author: "Thomas Jefferson" },
-            { text: "Success usually comes to those who are too busy to be looking for it.", author: "Henry David Thoreau" },
-            { text: "All our dreams can come true if we have the courage to pursue them.", author: "Walt Disney" },
-            { text: "Try not to become a person of success, but rather try to become a person of value.", author: "Albert Einstein" },
-            { text: "Don't let yesterday take up too much of today.", author: "Will Rogers" },
-            { text: "The only person you are destined to become is the person you decide to be.", author: "Ralph Waldo Emerson" },
-            { text: "It is never too late to be what you might have been.", author: "George Eliot" },
-            { text: "Setting goals is the first step in turning the invisible into the visible.", author: "Tony Robbins" },
-            { text: "Your time is limited, so don't waste it living someone else's life.", author: "Steve Jobs" },
-            { text: "You are never too old to set another goal or to dream a new dream.", author: "C.S. Lewis" },
-            { text: "Most of the important things in the world have been accomplished by people who have kept on trying.", author: "Dale Carnegie" },
-            { text: "Opportunities don't happen. You create them.", author: "Chris Grosser" },
-            { text: "I never dreamed about success, I worked for it.", author: "Estée Lauder" },
-            { text: "Success is walking from failure to failure with no loss of enthusiasm.", author: "Winston Churchill" },
-            { text: "A champion is defined not by their wins but by how they can recover when they fall.", author: "Serena Williams" },
-            { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
-            { text: "It's not whether you get knocked down, it's whether you get up.", author: "Vince Lombardi" },
-            { text: "I have not failed. I've just found 10,000 ways that won't work.", author: "Thomas Edison" },
-            { text: "Start where you are. Use what you have. Do what you can.", author: "Arthur Ashe" },
-            { text: "Fall seven times and stand up eight.", author: "Japanese Proverb" },
-            { text: "Stay hungry. Stay foolish.", author: "Steve Jobs" },
-            { text: "Work hard in silence. Let success be your noise.", author: "Frank Ocean" },
-            { text: "Talent wins games, but teamwork and intelligence win championships.", author: "Michael Jordan" },
-            { text: "We may encounter many defeats but we must not be defeated.", author: "Maya Angelou" },
-            { text: "Whether you think you can or you think you can't, you're right.", author: "Henry Ford" },
-            { text: "The only impossible journey is the one you never begin.", author: "Tony Robbins" },
-            { text: "You miss 100% of the shots you don't take.", author: "Wayne Gretzky" },
-            { text: "It always seems impossible until it's done.", author: "Nelson Mandela" },
-            { text: "There is no substitute for hard work.", author: "Thomas Edison" },
-            { text: "In the middle of every difficulty lies opportunity.", author: "Albert Einstein" },
-            { text: "The greatest glory in living lies not in never falling, but in rising every time we fall.", author: "Nelson Mandela" },
-            { text: "Be the change that you wish to see in the world.", author: "Mahatma Gandhi" },
-            { text: "The mind is everything. What you think you become.", author: "Buddha" },
-            { text: "Strive not to be a success, but rather to be of value.", author: "Albert Einstein" },
-            { text: "A person who never made a mistake never tried anything new.", author: "Albert Einstein" },
-            { text: "Happiness is not something ready made. It comes from your own actions.", author: "Dalai Lama" },
-            { text: "If you can dream it, you can do it.", author: "Walt Disney" },
-            { text: "The journey of a thousand miles begins with one step.", author: "Lao Tzu" },
-            { text: "That which does not kill us makes us stronger.", author: "Friedrich Nietzsche" },
-            { text: "Nothing is impossible, the word itself says I'm possible!", author: "Audrey Hepburn" },
-            { text: "Life is either a daring adventure or nothing at all.", author: "Helen Keller" },
-            { text: "Whatever you are, be a good one.", author: "Abraham Lincoln" },
-            { text: "We become what we think about.", author: "Earl Nightingale" },
-            { text: "The best preparation for tomorrow is doing your best today.", author: "H. Jackson Brown Jr." },
-            { text: "Education is the most powerful weapon which you can use to change the world.", author: "Nelson Mandela" },
-            { text: "Simplicity is the ultimate sophistication.", author: "Leonardo da Vinci" },
-            { text: "We are what we repeatedly do. Excellence, then, is not an act, but a habit.", author: "Aristotle" },
-            { text: "The only person you should try to be better than is the person you were yesterday.", author: "Unknown" },
-            { text: "Every moment is a fresh beginning.", author: "T.S. Eliot" },
-            { text: "Wherever you go, go with all your heart.", author: "Confucius" },
-            { text: "Never let the fear of striking out keep you from playing the game.", author: "Babe Ruth" },
-            { text: "You become what you believe.", author: "Oprah Winfrey" },
-            { text: "The most difficult thing is the decision to act, the rest is merely tenacity.", author: "Amelia Earhart" },
-            { text: "Life isn't about finding yourself. Life is about creating yourself.", author: "George Bernard Shaw" },
-            { text: "The question isn't who is going to let me; it's who is going to stop me.", author: "Ayn Rand" },
-            { text: "When something is important enough, you do it even if the odds are not in your favor.", author: "Elon Musk" },
-            { text: "Impossible is just an opinion.", author: "Paulo Coelho" },
-            { text: "Magic is believing in yourself. If you can do that, you can make anything happen.", author: "Johann Wolfgang von Goethe" },
-            { text: "Hold the vision, trust the process.", author: "Unknown" },
-            { text: "One day or day one. You decide.", author: "Unknown" },
-            { text: "The comeback is always stronger than the setback.", author: "Unknown" },
-            { text: "You didn't come this far to only come this far.", author: "Unknown" },
-            { text: "If you want to fly, give up everything that weighs you down.", author: "Toni Morrison" },
-            { text: "Every day may not be good, but there's something good in every day.", author: "Alice Morse Earle" },
-            { text: "Your only limit is you.", author: "Unknown" },
-            { text: "Stars can't shine without darkness.", author: "D.H. Sidebottom" },
-            { text: "Stay patient and trust your journey.", author: "Unknown" },
-            { text: "The expert in anything was once a beginner.", author: "Helen Hayes" },
-            { text: "Don't wait. The time will never be just right.", author: "Napoleon Hill" },
-            { text: "Act as if what you do makes a difference. It does.", author: "William James" },
-            { text: "With the new day comes new strength and new thoughts.", author: "Eleanor Roosevelt" },
-            { text: "Well done is better than well said.", author: "Benjamin Franklin" },
-            { text: "The best way to predict the future is to create it.", author: "Peter Drucker" },
-            { text: "You can, you should, and if you're brave enough to start, you will.", author: "Stephen King" },
-            { text: "Be so good they can't ignore you.", author: "Steve Martin" },
-            { text: "Do one thing every day that scares you.", author: "Eleanor Roosevelt" },
-            { text: "No pressure, no diamonds.", author: "Thomas Carlyle" },
-            { text: "Doubt kills more dreams than failure ever will.", author: "Suzy Kassem" },
-            { text: "Go the extra mile. It's never crowded.", author: "Wayne Dyer" },
-            { text: "Work hard and be kind and amazing things will happen.", author: "Conan O'Brien" },
-            { text: "Sometimes you win, sometimes you learn.", author: "John Maxwell" },
-            { text: "The harder the battle, the sweeter the victory.", author: "Les Brown" },
-            { text: "Don't wish it were easier. Wish you were better.", author: "Jim Rohn" },
-            { text: "You don't have to be great to start, but you have to start to be great.", author: "Zig Ziglar" },
-            { text: "A winner is a dreamer who never gives up.", author: "Nelson Mandela" },
-            { text: "Make each day your masterpiece.", author: "John Wooden" },
-            { text: "A little progress each day adds up to big results.", author: "Satya Nani" },
-            { text: "If you get tired, learn to rest, not quit.", author: "Banksy" },
-            { text: "Champions keep playing until they get it right.", author: "Billie Jean King" },
-            { text: "The difference between ordinary and extraordinary is that little extra.", author: "Jimmy Johnson" },
-            { text: "Hard work beats talent when talent doesn't work hard.", author: "Tim Notke" },
-            { text: "Success isn't always about greatness. It's about consistency.", author: "Dwayne Johnson" },
-            { text: "Tough times never last, but tough people do.", author: "Robert H. Schuller" },
-            { text: "Rock bottom became the solid foundation on which I rebuilt my life.", author: "J.K. Rowling" },
-            { text: "If you're going through hell, keep going.", author: "Winston Churchill" },
-            { text: "Smooth seas do not make skillful sailors.", author: "African Proverb" },
-            { text: "The gem cannot be polished without friction, nor man perfected without trials.", author: "Chinese Proverb" },
-            { text: "Out of difficulties grow miracles.", author: "Jean de La Bruyère" },
-            { text: "A problem is a chance for you to do your best.", author: "Duke Ellington" },
-            { text: "It is during our darkest moments that we must focus to see the light.", author: "Aristotle" },
-            { text: "Promise me you'll always remember: You're braver than you believe, stronger than you seem, smarter than you think.", author: "A.A. Milne" },
-            { text: "Failure is simply the opportunity to begin again, this time more intelligently.", author: "Henry Ford" },
-            { text: "Hardships often prepare ordinary people for an extraordinary destiny.", author: "C.S. Lewis" },
-            { text: "Life begins at the end of your comfort zone.", author: "Neale Donald Walsch" },
-            { text: "When everything seems to be going against you, remember that the airplane takes off against the wind.", author: "Henry Ford" },
-            { text: "Gratitude turns what we have into enough.", author: "Aesop" },
-            { text: "Alone we can do so little; together we can do so much.", author: "Helen Keller" },
-            { text: "Coming together is a beginning, staying together is progress, and working together is success.", author: "Henry Ford" },
-            { text: "If you want to go fast, go alone. If you want to go far, go together.", author: "African Proverb" },
+            { text: "Excellence is not a skill, it's an attitude.", author: "Ralph Marston" },
             { text: "Teamwork makes the dream work.", author: "John C. Maxwell" },
-            { text: "Great things in business are never done by one person. They're done by a team of people.", author: "Steve Jobs" },
-            { text: "Individually, we are one drop. Together, we are an ocean.", author: "Ryunosuke Satoro" },
-            { text: "The strength of the team is each individual member. The strength of each member is the team.", author: "Phil Jackson" },
-            { text: "A leader is one who knows the way, goes the way, and shows the way.", author: "John C. Maxwell" },
-            { text: "Don't find fault, find a remedy.", author: "Henry Ford" },
-            { text: "True leaders don't create followers, they create more leaders.", author: "Tom Peters" },
-            { text: "You don't need a title to be a leader.", author: "Mark Sanborn" },
-            { text: "Service to others is the rent you pay for your room here on earth.", author: "Muhammad Ali" },
-            { text: "Make a customer, not a sale.", author: "Katherine Barchetti" },
-            { text: "Customer service shouldn't just be a department, it should be the entire company.", author: "Tony Hsieh" },
+            { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+            { text: "Success usually comes to those who are too busy to be looking for it.", author: "Henry David Thoreau" },
+            { text: "Don't watch the clock; do what it does. Keep going.", author: "Sam Levenson" },
+            { text: "Quality is not an act, it is a habit.", author: "Aristotle" },
+            { text: "The best way to predict the future is to create it.", author: "Peter Drucker" },
             { text: "Your most unhappy customers are your greatest source of learning.", author: "Bill Gates" },
-            { text: "People will forget what you said, people will forget what you did, but people will never forget how you made them feel.", author: "Maya Angelou" },
-            { text: "A smile is the universal welcome.", author: "Max Eastman" },
-            { text: "Always do more than is required of you.", author: "George S. Patton" },
-            { text: "Excellence is not a skill. It is an attitude.", author: "Ralph Marston" },
-            { text: "A positive attitude causes a chain reaction of positive thoughts.", author: "Wade Boggs" },
-            { text: "Keep your face to the sunshine and you cannot see a shadow.", author: "Helen Keller" },
-            { text: "Optimism is the faith that leads to achievement.", author: "Helen Keller" },
-            { text: "Every day is a new opportunity. You can build on yesterday's success or put its failures behind.", author: "Bob Feller" },
-            { text: "I am not a product of my circumstances. I am a product of my decisions.", author: "Stephen Covey" },
+            { text: "Coming together is a beginning, staying together is progress, working together is success.", author: "Henry Ford" },
+            { text: "Hospitality is simply an opportunity to show love and care.", author: "Unknown" },
+            { text: "Great things in business are never done by one person.", author: "Steve Jobs" },
+            { text: "It's not about perfect. It's about effort.", author: "Jillian Michaels" },
+            { text: "The way to get started is to quit talking and begin doing.", author: "Walt Disney" },
+            { text: "Success is the sum of small efforts repeated day in and day out.", author: "Robert Collier" },
+            { text: "Customers will never love a company until the employees love it first.", author: "Simon Sinek" },
+            { text: "The customer's perception is your reality.", author: "Kate Zabriskie" },
+            { text: "Kindness in words creates confidence. Kindness in thinking creates profoundness. Kindness in giving creates love.", author: "Lao Tzu" },
+            { text: "Alone we can do so little; together we can do so much.", author: "Helen Keller" },
+            { text: "The strength of the team is each member. The strength of each member is the team.", author: "Phil Jackson" },
+            { text: "People don't care how much you know until they know how much you care.", author: "Theodore Roosevelt" },
+            { text: "Service to others is the rent you pay for your room here on earth.", author: "Muhammad Ali" },
+            { text: "The goal is not to be perfect by the end. The goal is to be better today.", author: "Simon Sinek" },
+            { text: "Be the change you wish to see in the world.", author: "Mahatma Gandhi" },
+            { text: "Every job is a self-portrait of the person who did it. Autograph your work with excellence.", author: "Unknown" },
+            { text: "If you want to lift yourself up, lift up someone else.", author: "Booker T. Washington" },
+            { text: "A satisfied customer is the best business strategy of all.", author: "Michael LeBoeuf" },
+            { text: "Hard work beats talent when talent doesn't work hard.", author: "Tim Notke" },
             { text: "Success is not the key to happiness. Happiness is the key to success.", author: "Albert Schweitzer" },
             { text: "The pessimist sees difficulty in every opportunity. The optimist sees opportunity in every difficulty.", author: "Winston Churchill" },
-            { text: "Wherever you go, no matter what the weather, always bring your own sunshine.", author: "Anthony J. D'Angelo" },
-            { text: "Choose to be optimistic, it feels better.", author: "Dalai Lama" },
-            { text: "In order to carry a positive action we must develop here a positive vision.", author: "Dalai Lama" }
+            { text: "Wherever you go, go with all your heart.", author: "Confucius" }
         ];
 
         let calendarDate = new Date();
         let managerSchedule = {};
         let dailyNotes = {};
 
+        // Theme Toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeButton(newTheme);
+        }
+
+        function updateThemeButton(theme) {
+            const icon = document.getElementById('themeIcon');
+            const text = document.getElementById('themeText');
+            if (theme === 'dark') {
+                icon.textContent = '☀️';
+                text.textContent = 'Light Mode';
+            } else {
+                icon.textContent = '🌙';
+                text.textContent = 'Dark Mode';
+            }
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeButton(savedTheme);
+        }
+
+        // Utility Functions
         function formatDate(date) {
             return date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         }
+
         function formatDateShort(date) {
             return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         }
+
         function getDateKey(date) {
             return date.toISOString().split('T')[0];
         }
+
         function getDayOfYear() {
             const now = new Date();
             const start = new Date(now.getFullYear(), 0, 0);
             return Math.floor((now - start) / (1000 * 60 * 60 * 24));
         }
+
         function getQuoteOfTheDay() {
             return QUOTES[getDayOfYear() % QUOTES.length];
         }
+
+        // Extract manager name from formats like "Z on duty", "A On Duty", or just "Z"
+        function extractManagerName(rawName) {
+            if (!rawName) return '';
+            // Remove common suffixes like "on duty", "On Duty", "- Manager", etc.
+            let name = rawName
+                .replace(/\s*(on duty|on-duty|manager|- manager|\(manager\))\s*/gi, '')
+                .trim();
+            // If we end up with empty string, return original
+            return name || rawName;
+        }
+
         function displayQuote() {
             const quote = getQuoteOfTheDay();
             document.getElementById('quoteText').textContent = quote.text;
             document.getElementById('quoteAuthor').textContent = '— ' + quote.author;
         }
 
+        // Notion API Functions
         async function fetchNotionDatabase(databaseId) {
             try {
                 const response = await fetch(CONFIG.API_ENDPOINT, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ databaseId: databaseId })
                 });
                 if (!response.ok) throw new Error('API error: ' + response.status);
@@ -565,54 +676,121 @@
 
         async function loadManagerSchedule() {
             const data = await fetchNotionDatabase(CONFIG.CALENDAR_DB_ID);
-            if (!data || !data.results) return;
+            if (!data || !data.results) {
+                console.error('Failed to load manager schedule');
+                return;
+            }
+            
             managerSchedule = {};
+            
             data.results.forEach(page => {
                 const props = page.properties;
-                let dateValue = null, managerValue = null;
+                let dateValue = null;
+                let managerValue = null;
+                
+                // Debug: log what we're getting
+                console.log('Processing page:', page.id);
+                
                 for (const [key, prop] of Object.entries(props)) {
-                    if (prop.type === 'date' && prop.date) dateValue = prop.date.start;
-                    if (prop.type === 'title' && prop.title && prop.title.length > 0) managerValue = prop.title[0].plain_text;
-                    if (prop.type === 'rich_text' && prop.rich_text && prop.rich_text.length > 0 && !managerValue) managerValue = prop.rich_text[0].plain_text;
-                    if (prop.type === 'select' && prop.select && !managerValue) managerValue = prop.select.name;
+                    console.log(`  Property "${key}":`, prop.type, prop);
+                    
+                    // Get date
+                    if (prop.type === 'date' && prop.date) {
+                        dateValue = prop.date.start;
+                    }
+                    
+                    // Get manager name from title (like "Z on duty" or "A On Duty")
+                    if (prop.type === 'title' && prop.title && prop.title.length > 0) {
+                        managerValue = prop.title[0].plain_text;
+                    }
+                    
+                    // Also check rich_text as fallback
+                    if (prop.type === 'rich_text' && prop.rich_text && prop.rich_text.length > 0 && !managerValue) {
+                        managerValue = prop.rich_text[0].plain_text;
+                    }
+                    
+                    // Check select as another fallback
+                    if (prop.type === 'select' && prop.select && !managerValue) {
+                        managerValue = prop.select.name;
+                    }
                 }
-                if (dateValue && managerValue) managerSchedule[dateValue] = managerValue;
+                
+                if (dateValue && managerValue) {
+                    // Extract just the manager name (e.g., "Z" from "Z on duty")
+                    const cleanName = extractManagerName(managerValue);
+                    managerSchedule[dateValue] = cleanName;
+                    console.log(`  -> Mapped: ${dateValue} = "${cleanName}" (from "${managerValue}")`);
+                }
             });
+            
+            console.log('Final managerSchedule:', managerSchedule);
         }
 
         async function loadDailyNotes() {
             const data = await fetchNotionDatabase(CONFIG.NOTES_DB_ID);
             if (!data || !data.results) return;
+            
             dailyNotes = {};
+            
             data.results.forEach(page => {
                 const props = page.properties;
-                let dateValue = null, noteValue = null, managerValue = null;
+                let dateValue = null;
+                let noteValue = null;
+                let managerValue = null;
+                
                 for (const [key, prop] of Object.entries(props)) {
-                    if (prop.type === 'date' && prop.date) dateValue = prop.date.start;
-                    if ((key.toLowerCase().includes('note') || key.toLowerCase().includes('daily'))) {
-                        if (prop.type === 'rich_text' && prop.rich_text && prop.rich_text.length > 0) noteValue = prop.rich_text.map(t => t.plain_text).join('');
-                        if (prop.type === 'title' && prop.title && prop.title.length > 0) noteValue = prop.title.map(t => t.plain_text).join('');
+                    // Get date
+                    if (prop.type === 'date' && prop.date) {
+                        dateValue = prop.date.start;
                     }
-                    if ((key.toLowerCase().includes('manager') || key.toLowerCase().includes('name'))) {
-                        if (prop.type === 'title' && prop.title && prop.title.length > 0) managerValue = prop.title[0].plain_text;
-                        if (prop.type === 'rich_text' && prop.rich_text && prop.rich_text.length > 0) managerValue = prop.rich_text[0].plain_text;
+                    
+                    // Look for note content
+                    if (key.toLowerCase().includes('note') || key.toLowerCase().includes('daily')) {
+                        if (prop.type === 'rich_text' && prop.rich_text && prop.rich_text.length > 0) {
+                            noteValue = prop.rich_text.map(t => t.plain_text).join('');
+                        }
+                        if (prop.type === 'title' && prop.title && prop.title.length > 0) {
+                            noteValue = prop.title.map(t => t.plain_text).join('');
+                        }
+                    }
+                    
+                    // Look for manager name
+                    if (key.toLowerCase().includes('manager') || key.toLowerCase().includes('name')) {
+                        if (prop.type === 'title' && prop.title && prop.title.length > 0) {
+                            managerValue = prop.title[0].plain_text;
+                        }
+                        if (prop.type === 'rich_text' && prop.rich_text && prop.rich_text.length > 0) {
+                            managerValue = prop.rich_text[0].plain_text;
+                        }
                     }
                 }
-                if (dateValue) dailyNotes[dateValue] = { note: noteValue || '', manager: managerValue || '' };
+                
+                if (dateValue) {
+                    dailyNotes[dateValue] = { 
+                        note: noteValue || '', 
+                        manager: managerValue ? extractManagerName(managerValue) : '' 
+                    };
+                }
             });
         }
 
+        // UI Update Functions
         function updateCurrentDate() {
             document.getElementById('currentDate').textContent = formatDate(new Date());
             document.getElementById('todayDate').textContent = formatDateShort(new Date());
         }
+
         function updateTodayManager() {
-            document.getElementById('todayManager').textContent = managerSchedule[getDateKey(new Date())] || '--';
+            const todayKey = getDateKey(new Date());
+            const manager = managerSchedule[todayKey] || '--';
+            document.getElementById('todayManager').textContent = manager;
         }
+
         function updateDailyNote() {
             const noteData = dailyNotes[getDateKey(new Date())];
             const noteEl = document.getElementById('managerNote');
             const authorEl = document.getElementById('noteAuthor');
+            
             if (noteData && noteData.note && noteData.note.trim()) {
                 noteEl.textContent = noteData.note;
                 noteEl.classList.remove('empty');
@@ -627,37 +805,51 @@
         function renderCalendar() {
             const year = calendarDate.getFullYear();
             const month = calendarDate.getMonth();
-            document.getElementById('calendarMonth').textContent = calendarDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            
+            document.getElementById('calendarMonth').textContent = 
+                calendarDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            
             const firstDay = new Date(year, month, 1);
             const lastDay = new Date(year, month + 1, 0);
             const startingDay = firstDay.getDay();
             const totalDays = lastDay.getDate();
             const todayKey = getDateKey(new Date());
+            
             const grid = document.getElementById('calendarGrid');
             const headers = grid.querySelectorAll('.calendar-header');
             grid.innerHTML = '';
             headers.forEach(h => grid.appendChild(h));
+            
+            // Previous month days
             for (let i = 0; i < startingDay; i++) {
                 const emptyDay = document.createElement('div');
                 emptyDay.className = 'calendar-day other-month';
                 const prevMonthLastDay = new Date(year, month, 0).getDate();
-                emptyDay.innerHTML = '<span class="day-number">' + (prevMonthLastDay - startingDay + i + 1) + '</span>';
+                emptyDay.innerHTML = `<span class="day-number">${prevMonthLastDay - startingDay + i + 1}</span>`;
                 grid.appendChild(emptyDay);
             }
+            
+            // Current month days
             for (let day = 1; day <= totalDays; day++) {
                 const date = new Date(year, month, day);
                 const dateKey = getDateKey(date);
                 const dayEl = document.createElement('div');
                 dayEl.className = 'calendar-day' + (dateKey === todayKey ? ' today' : '');
+                
                 const manager = managerSchedule[dateKey] || '';
-                dayEl.innerHTML = '<span class="day-number">' + day + '</span>' + (manager ? '<span class="manager-name">' + manager + '</span>' : '');
+                dayEl.innerHTML = `
+                    <span class="day-number">${day}</span>
+                    ${manager ? `<span class="manager-name">${manager}</span>` : ''}
+                `;
                 grid.appendChild(dayEl);
             }
+            
+            // Next month days
             const remainingCells = (7 - ((startingDay + totalDays) % 7)) % 7;
             for (let i = 1; i <= remainingCells; i++) {
                 const emptyDay = document.createElement('div');
                 emptyDay.className = 'calendar-day other-month';
-                emptyDay.innerHTML = '<span class="day-number">' + i + '</span>';
+                emptyDay.innerHTML = `<span class="day-number">${i}</span>`;
                 grid.appendChild(emptyDay);
             }
         }
@@ -666,18 +858,25 @@
             calendarDate.setMonth(calendarDate.getMonth() + delta);
             renderCalendar();
         }
+
         function goToToday() {
             calendarDate = new Date();
             renderCalendar();
         }
+
         function updateLastUpdated() {
-            document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('lastUpdated').textContent = 
+                new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
         }
 
+        // Initialize
         async function init() {
+            loadTheme();
             updateCurrentDate();
             displayQuote();
+            
             await Promise.all([loadManagerSchedule(), loadDailyNotes()]);
+            
             updateTodayManager();
             updateDailyNote();
             renderCalendar();
