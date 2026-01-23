@@ -30,13 +30,13 @@
             --radius-large: 12px;
             --radius-xl: 16px;
             
-            /* Tag Colors */
-            --tag-important: #E07B5D;
-            --tag-important-bg: rgba(224, 123, 93, 0.15);
-            --tag-birthday: #9B7ED9;
-            --tag-birthday-bg: rgba(155, 126, 217, 0.15);
-            --tag-party: #D4A574;
-            --tag-party-bg: rgba(212, 165, 116, 0.15);
+            /* Tag Colors - Soft, calming pastels */
+            --tag-important: #C4A484;
+            --tag-important-bg: rgba(196, 164, 132, 0.15);
+            --tag-birthday: #B8A9C9;
+            --tag-birthday-bg: rgba(184, 169, 201, 0.12);
+            --tag-party: #A7C4BC;
+            --tag-party-bg: rgba(167, 196, 188, 0.15);
         }
 
         /* Dark Mode Colors */
@@ -59,9 +59,9 @@
             --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.4);
             --shadow-heavy: 0 8px 32px rgba(0, 0, 0, 0.5);
             
-            --tag-important-bg: rgba(224, 123, 93, 0.25);
-            --tag-birthday-bg: rgba(155, 126, 217, 0.25);
-            --tag-party-bg: rgba(212, 165, 116, 0.25);
+            --tag-important-bg: rgba(196, 164, 132, 0.25);
+            --tag-birthday-bg: rgba(184, 169, 201, 0.2);
+            --tag-party-bg: rgba(167, 196, 188, 0.25);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -360,27 +360,27 @@
 
         .event-tag {
             font-size: 0.55rem;
-            font-weight: 700;
+            font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.03em;
-            padding: 2px 5px;
-            border-radius: 3px;
+            padding: 2px 6px;
+            border-radius: 4px;
             flex-shrink: 0;
         }
 
         .event-tag.important {
             background: var(--tag-important);
-            color: white;
+            color: #fff;
         }
 
         .event-tag.birthday {
             background: var(--tag-birthday);
-            color: white;
+            color: #fff;
         }
 
         .event-tag.party {
             background: var(--tag-party);
-            color: white;
+            color: #fff;
         }
 
         .event-description {
@@ -842,7 +842,7 @@
                 }
                 
                 for (const [key, prop] of Object.entries(props)) {
-                    const keyLower = key.toLowerCase();
+                    const keyLower = key.toLowerCase().trim(); // trim any trailing spaces
                     
                     // Get date (from "Date" property)
                     if (prop.type === 'date' && prop.date) {
@@ -854,8 +854,8 @@
                         managerValue = prop.title[0].plain_text;
                     }
                     
-                    // Get Description (rich_text) - check various possible names
-                    if (keyLower === 'description' && prop.type === 'rich_text' && prop.rich_text) {
+                    // Get Description (rich_text) - trim key to handle "Description " with trailing space
+                    if (keyLower === 'description' && prop.type === 'rich_text' && prop.rich_text && prop.rich_text.length > 0) {
                         description = prop.rich_text.map(t => t.plain_text).join('');
                         console.log(`Found Description: "${description}"`);
                     }
