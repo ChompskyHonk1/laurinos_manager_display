@@ -829,14 +829,21 @@
             
             console.log('Loading calendar data...');
             
-            data.results.forEach(page => {
+            data.results.forEach((page, index) => {
                 const props = page.properties;
                 let dateValue = null;
                 let managerValue = null;
                 let description = null;
                 let tags = [];
                 
+                // Debug: log ALL properties for first few entries
+                if (index < 3) {
+                    console.log(`Page ${index} properties:`, JSON.stringify(props, null, 2));
+                }
+                
                 for (const [key, prop] of Object.entries(props)) {
+                    const keyLower = key.toLowerCase();
+                    
                     // Get date (from "Date" property)
                     if (prop.type === 'date' && prop.date) {
                         dateValue = parseNotionDate(prop.date.start);
@@ -847,17 +854,20 @@
                         managerValue = prop.title[0].plain_text;
                     }
                     
-                    // Get Description (rich_text)
-                    if (key.toLowerCase() === 'description' && prop.type === 'rich_text' && prop.rich_text) {
+                    // Get Description (rich_text) - check various possible names
+                    if (keyLower === 'description' && prop.type === 'rich_text' && prop.rich_text) {
                         description = prop.rich_text.map(t => t.plain_text).join('');
+                        console.log(`Found Description: "${description}"`);
                     }
                     
                     // Get Tags (multi_select or select)
-                    if (key.toLowerCase() === 'tags') {
+                    if (keyLower === 'tags') {
                         if (prop.type === 'multi_select' && prop.multi_select) {
                             tags = prop.multi_select.map(t => t.name.toLowerCase());
+                            console.log(`Found Tags (multi_select):`, tags);
                         } else if (prop.type === 'select' && prop.select) {
                             tags = [prop.select.name.toLowerCase()];
+                            console.log(`Found Tags (select):`, tags);
                         }
                     }
                 }
@@ -867,15 +877,15 @@
                     managerSchedule[dateValue] = cleanName;
                     console.log(`Schedule: ${dateValue} = "${cleanName}"`);
                     
-                    // If there's a tag and description, add to events
-                    if (tags.length > 0 && description) {
+                    // If there's a tag, add to events (description can be optional)
+                    if (tags.length > 0) {
                         calendarEvents.push({
                             date: dateValue,
-                            description: description,
-                            tag: tags[0], // Use first tag
+                            description: description || 'No description',
+                            tag: tags[0],
                             manager: cleanName
                         });
-                        console.log(`Event: ${dateValue} - ${tags[0]} - "${description}"`);
+                        console.log(`Event added: ${dateValue} - ${tags[0]} - "${description || 'No description'}"`);
                     }
                 }
             });
