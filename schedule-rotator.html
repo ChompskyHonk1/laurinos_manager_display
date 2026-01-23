@@ -20,37 +20,64 @@
             top: 0;
             left: 0;
         }
+        .timer {
+            position: fixed;
+            bottom: 8px;
+            right: 12px;
+            background: rgba(0, 0, 0, 0.5);
+            color: #A68B6B;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 0.65rem;
+            z-index: 1000;
+            letter-spacing: 0.05em;
+        }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <iframe id="displayFrame"></iframe>
+    <div class="timer" id="timer">Next page in 30s</div>
 
     <script>
         const ROTATION_INTERVAL = 30; // 30 seconds
         
         const pages = [
-            '/index.html',           // Manager on Duty
-            '/foh-schedule.html',    // Front of House
-            '/boh-schedule.html'     // Back of House
+            { url: '/index.html', name: 'Manager on Duty' },
+            { url: '/foh-schedule.html', name: 'Front of House' },
+            { url: '/boh-schedule.html', name: 'Back of House' }
         ];
         
         let currentIndex = 0;
         let countdown = ROTATION_INTERVAL;
         const frame = document.getElementById('displayFrame');
+        const timerEl = document.getElementById('timer');
+
+        function getNextPageName() {
+            const nextIndex = (currentIndex + 1) % pages.length;
+            return pages[nextIndex].name;
+        }
+
+        function updateTimer() {
+            timerEl.textContent = `${getNextPageName()} in ${countdown}s`;
+        }
 
         function loadPage(index) {
-            frame.src = pages[index];
-            console.log('Loading:', pages[index]);
+            frame.src = pages[index].url;
+            console.log('Loading:', pages[index].name);
         }
 
         function rotate() {
             currentIndex = (currentIndex + 1) % pages.length;
             loadPage(currentIndex);
             countdown = ROTATION_INTERVAL;
+            updateTimer();
         }
 
         function tick() {
             countdown--;
+            updateTimer();
             if (countdown <= 0) {
                 rotate();
             }
@@ -58,6 +85,7 @@
 
         // Initial load
         loadPage(currentIndex);
+        updateTimer();
 
         // Start rotation
         setInterval(tick, 1000);
