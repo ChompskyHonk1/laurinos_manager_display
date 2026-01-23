@@ -303,11 +303,11 @@
             background-clip: text;
         }
 
-        /* Events Section - Horizontal bar at bottom of calendar */
+        /* Events Section - Stacked vertically under calendar */
         .events-section {
             border-top: 1px solid var(--border);
-            padding-top: 8px;
-            margin-top: 8px;
+            padding-top: 10px;
+            margin-top: 6px;
             flex-shrink: 0;
         }
 
@@ -315,26 +315,26 @@
             font-size: 0.7rem;
             font-weight: 600;
             color: var(--muted-text);
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             text-transform: uppercase;
             letter-spacing: 0.08em;
         }
 
         .events-list {
             display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
+            flex-direction: column;
+            gap: 5px;
         }
 
         .event-item {
-            display: inline-flex;
+            display: grid;
+            grid-template-columns: 50px 65px 1fr;
             align-items: center;
-            gap: 6px;
-            padding: 4px 10px;
+            gap: 12px;
+            padding: 6px 12px;
             border-radius: var(--radius-medium);
             border-left: 3px solid;
-            font-size: 0.7rem;
-            max-width: 280px;
+            background: var(--background);
         }
 
         .event-item.important {
@@ -353,19 +353,19 @@
         }
 
         .event-date {
+            font-size: 0.7rem;
             font-weight: 600;
             color: var(--text-primary);
-            flex-shrink: 0;
         }
 
         .event-tag {
-            font-size: 0.55rem;
+            font-size: 0.5rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.03em;
-            padding: 2px 6px;
+            padding: 3px 6px;
             border-radius: 4px;
-            flex-shrink: 0;
+            text-align: center;
         }
 
         .event-tag.important {
@@ -384,6 +384,7 @@
         }
 
         .event-description {
+            font-size: 0.7rem;
             color: var(--text-primary);
             white-space: nowrap;
             overflow: hidden;
@@ -391,7 +392,7 @@
         }
 
         .no-events {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--muted-text);
             font-style: italic;
         }
