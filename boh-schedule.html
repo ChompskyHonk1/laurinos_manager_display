@@ -295,7 +295,7 @@
         }
 
         function loadTheme() {
-            const saved = localStorage.getItem('schedule-theme') || 'light';
+            const saved = localStorage.getItem('schedule-theme') || 'dark';
             document.documentElement.setAttribute('data-theme', saved);
             document.getElementById('themeToggle').textContent = saved === 'dark' ? '☀️ Light' : '🌙 Dark';
         }
