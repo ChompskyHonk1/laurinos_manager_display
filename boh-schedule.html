@@ -357,6 +357,9 @@
                     if (prop.type === 'date' && prop.date) {
                         dateValue = prop.date.start.split('T')[0];
                     }
+                    if (keyLower === 'employee' && prop.type === 'select' && prop.select) {
+                        name = prop.select.name;
+                    }
                     if (prop.type === 'title' && prop.title && prop.title.length > 0) {
                         name = prop.title[0].plain_text;
                     }
