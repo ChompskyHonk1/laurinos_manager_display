@@ -273,7 +273,8 @@
 
     <footer class="footer">
         <span class="status-dot"></span>
-        Auto-refresh enabled · Last updated: <span id="lastUpdated">--</span>
+        Auto-refresh enabled · Last updated: <span id="lastUpdated">--</span> · 
+        <span id="recordCount">0</span> records loaded
     </footer>
 
     <script>
@@ -330,7 +331,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ databaseId: CONFIG.DATABASE_ID })
                 });
-                if (!response.ok) throw new Error('API error');
+                if (!response.ok) throw new Error('API error: ' + response.status);
                 return await response.json();
             } catch (error) {
                 console.error('Error fetching schedule:', error);
@@ -340,46 +341,122 @@
 
         async function loadSchedule() {
             const data = await fetchSchedule();
-            if (!data || !data.results) return;
+            if (!data || !data.results) {
+                console.error('No data returned from API');
+                return;
+            }
+
+            console.log('=== BOH SCHEDULE DEBUG ===');
+            console.log('Total records received:', data.results.length);
+            document.getElementById('recordCount').textContent = data.results.length;
+
+            // Log the first record's full structure
+            if (data.results.length > 0) {
+                console.log('First record full structure:', JSON.stringify(data.results[0], null, 2));
+                console.log('First record properties:', Object.keys(data.results[0].properties));
+            }
 
             scheduleData = {};
+            let parsedCount = 0;
+            let skippedCount = 0;
 
-            data.results.forEach(page => {
+            data.results.forEach((page, index) => {
                 const props = page.properties;
                 let dateValue = null;
                 let name = null;
                 let shiftType = null;
                 let timeIn = null;
 
+                // Log first 5 records in detail
+                if (index < 5) {
+                    console.log(`\n--- Record ${index + 1} ---`);
+                }
+
                 for (const [key, prop] of Object.entries(props)) {
                     const keyLower = key.toLowerCase().trim();
 
+                    // Log property details for first 5 records
+                    if (index < 5) {
+                        console.log(`  ${key} (${prop.type}):`, JSON.stringify(prop[prop.type]));
+                    }
+
+                    // Get Date
                     if (prop.type === 'date' && prop.date) {
                         dateValue = prop.date.start.split('T')[0];
                     }
-                    if (keyLower === 'employee' && prop.type === 'select' && prop.select) {
-                        name = prop.select.name;
+
+                    // Get Employee name - check multiple possible field types
+                    if (keyLower === 'employee') {
+                        if (prop.type === 'select' && prop.select) {
+                            name = prop.select.name;
+                        } else if (prop.type === 'multi_select' && prop.multi_select && prop.multi_select.length > 0) {
+                            name = prop.multi_select[0].name;
+                        } else if (prop.type === 'rich_text' && prop.rich_text && prop.rich_text.length > 0) {
+                            name = prop.rich_text[0].plain_text;
+                        }
                     }
-                    if (prop.type === 'title' && prop.title && prop.title.length > 0 && !name) {
-                        name = prop.title[0].plain_text;
+
+                    // Also check title field as fallback for name
+                    if (prop.type === 'title' && prop.title && prop.title.length > 0) {
+                        // Only use title as name if we don't have one from Employee field
+                        if (!name) {
+                            name = prop.title[0].plain_text;
+                        }
                     }
-                    if (keyLower === 'shift type' && prop.type === 'select' && prop.select) {
-                        shiftType = prop.select.name;
+
+                    // Get Shift Type
+                    if (keyLower === 'shift type' || keyLower === 'shift_type' || keyLower === 'shifttype') {
+                        if (prop.type === 'select' && prop.select) {
+                            shiftType = prop.select.name;
+                        } else if (prop.type === 'multi_select' && prop.multi_select && prop.multi_select.length > 0) {
+                            shiftType = prop.multi_select[0].name;
+                        }
                     }
-                    if (keyLower === 'time in' && prop.type === 'number') {
-                        timeIn = prop.number;
+
+                    // Get Time In
+                    if (keyLower === 'time in' || keyLower === 'time_in' || keyLower === 'timein') {
+                        if (prop.type === 'number' && prop.number !== null) {
+                            timeIn = prop.number;
+                        }
                     }
+                }
+
+                if (index < 5) {
+                    console.log(`  PARSED: date=${dateValue}, name=${name}, shift=${shiftType}, time=${timeIn}`);
                 }
 
                 if (dateValue && name) {
                     if (!scheduleData[dateValue]) scheduleData[dateValue] = [];
                     scheduleData[dateValue].push({ name, shiftType, timeIn });
+                    parsedCount++;
+                } else {
+                    skippedCount++;
+                    if (index < 10) {
+                        console.log(`  SKIPPED: missing date or name`);
+                    }
                 }
             });
+
+            console.log('\n=== PARSING SUMMARY ===');
+            console.log('Parsed successfully:', parsedCount);
+            console.log('Skipped (missing data):', skippedCount);
+            console.log('Unique dates with shifts:', Object.keys(scheduleData).length);
+            console.log('Dates:', Object.keys(scheduleData).sort());
 
             // Sort shifts by time
             for (const date in scheduleData) {
                 scheduleData[date].sort((a, b) => (a.timeIn || 0) - (b.timeIn || 0));
+            }
+
+            // Log what we have for the next 14 days
+            const today = new Date();
+            console.log('\n=== NEXT 14 DAYS ===');
+            for (let i = 0; i < 14; i++) {
+                const d = new Date(today);
+                d.setDate(today.getDate() + i);
+                const key = getLocalDateKey(d);
+                const shifts = scheduleData[key] || [];
+                console.log(`${key}: ${shifts.length} shifts`, shifts.map(s => s.name).join(', '));
             }
 
             renderSchedule();

@@ -1,81 +1,81 @@
-// Vercel Serverless Function for Notion API
-// This keeps your Notion token secure on the server side
-
 export default async function handler(req, res) {
-    // Set CORS headers
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  // CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-    // Handle preflight request
-    if (req.method === 'OPTIONS') {
-        return res.status(200).end();
-    }
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
 
-    // Only allow POST requests
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method not allowed' });
-    }
+  // Support both POST body and query params
+  let databaseId;
+  
+  if (req.method === 'POST' && req.body && req.body.databaseId) {
+    databaseId = req.body.databaseId;
+  } else if (req.query.database) {
+    const databases = {
+      calendar: '2f042fe32264805caeced964c5c1228e',
+      notes: '2f042fe32264809297d6f75dfd050fa0',
+      boh: '2f142fe3226481529630f2c86425ece8'
+    };
+    databaseId = databases[req.query.database];
+  }
 
-    // Log incoming request for debugging
-    console.log('Request body:', req.body);
+  if (!databaseId) {
+    return res.status(400).json({ 
+      error: 'Missing databaseId' 
+    });
+  }
 
-    const { databaseId } = req.body || {};
+  try {
+    let allResults = [];
+    let hasMore = true;
+    let startCursor = undefined;
 
-    if (!databaseId) {
-        console.error('Missing databaseId. Received body:', req.body);
-        return res.status(400).json({ 
-            error: 'Missing databaseId in request body',
-            receivedBody: req.body 
+    while (hasMore) {
+      const body = { page_size: 100 };
+      if (startCursor) body.start_cursor = startCursor;
+
+      const response = await fetch(`https://api.notion.com/v1/databases/${databaseId}/query`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.NOTION_TOKEN}`,
+          'Notion-Version': '2022-06-28',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Notion API error:', response.status, errorText);
+        return res.status(response.status).json({ 
+          error: `Notion API error: ${response.status}`,
+          details: errorText 
         });
+      }
+
+      const data = await response.json();
+      allResults = allResults.concat(data.results);
+      hasMore = data.has_more;
+      startCursor = data.next_cursor;
+      
+      // Safety limit
+      if (allResults.length >= 1000) {
+        hasMore = false;
+      }
     }
 
-    const NOTION_TOKEN = process.env.NOTION_TOKEN;
+    console.log(`Fetched ${allResults.length} total records from database ${databaseId}`);
 
-    if (!NOTION_TOKEN) {
-        console.error('NOTION_TOKEN environment variable is not set');
-        return res.status(500).json({ error: 'Server configuration error - missing NOTION_TOKEN' });
-    }
-
-    // Log that we're attempting the request (don't log the full token!)
-    console.log('Attempting Notion API request for database:', databaseId);
-    console.log('Token starts with:', NOTION_TOKEN.substring(0, 10) + '...');
-
-    try {
-        const notionUrl = `https://api.notion.com/v1/databases/${databaseId}/query`;
-        console.log('Fetching:', notionUrl);
-
-        const response = await fetch(notionUrl, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${NOTION_TOKEN}`,
-                'Notion-Version': '2022-06-28',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({})
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('Notion API error:', response.status, errorText);
-            return res.status(response.status).json({ 
-                error: 'Notion API error', 
-                status: response.status,
-                details: errorText,
-                databaseId: databaseId
-            });
-        }
-
-        const data = await response.json();
-        console.log('Success! Got', data.results?.length || 0, 'results');
-        return res.status(200).json(data);
-
-    } catch (error) {
-        console.error('Error fetching from Notion:', error);
-        return res.status(500).json({ 
-            error: 'Failed to fetch from Notion', 
-            details: error.message,
-            databaseId: databaseId
-        });
-    }
+    return res.status(200).json({ 
+      results: allResults,
+      count: allResults.length
+    });
+    
+  } catch (error) {
+    console.error('Server error:', error);
+    return res.status(500).json({ error: 'Server error', details: error.message });
+  }
 }
