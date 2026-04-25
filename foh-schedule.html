@@ -111,70 +111,6 @@
             color: white;
         }
 
-        .nav-bar {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 6px 0 8px;
-            flex-shrink: 0;
-        }
-
-        .nav-btn {
-            background: var(--card-background);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 5px 14px;
-            border-radius: var(--radius-medium);
-            cursor: pointer;
-            font-size: 0.7rem;
-            font-family: 'Source Sans Pro', sans-serif;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .nav-btn:hover:not(:disabled) {
-            background: var(--tertiary-dark);
-            color: white;
-            border-color: var(--tertiary-dark);
-        }
-
-        .nav-btn:disabled {
-            opacity: 0.35;
-            cursor: default;
-        }
-
-        .nav-btn.today-btn {
-            background: var(--highlight);
-            color: white;
-            border-color: var(--highlight);
-        }
-
-        .nav-btn.today-btn:hover {
-            opacity: 0.85;
-        }
-
-        .nav-btn.today-btn.hidden {
-            display: none;
-        }
-
-        .date-range {
-            font-size: 0.75rem;
-            color: var(--secondary-dark);
-            font-weight: 600;
-            min-width: 140px;
-            text-align: center;
-            letter-spacing: 0.03em;
-        }
-
-        .nav-bar.hidden {
-            display: none;
-        }
-
-        /* Schedule Grid - 14 days */
         .schedule-container {
             flex: 1;
             background: var(--card-background);
@@ -185,14 +121,30 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            min-height: 0;
+        }
+
+        .schedule-scroll {
+            flex: 1;
+            overflow-x: auto;
+            overflow-y: hidden;
+            min-height: 0;
+            cursor: grab;
+        }
+
+        .schedule-scroll:active {
+            cursor: grabbing;
+        }
+
+        .schedule-scroll.iframed {
+            overflow-x: hidden;
         }
 
         .schedule-grid {
             display: grid;
-            grid-template-columns: repeat(14, 1fr);
             gap: 6px;
-            flex: 1;
-            min-height: 0;
+            height: 100%;
+            min-width: max-content;
         }
 
         .day-column {
@@ -201,7 +153,8 @@
             background: var(--background);
             border-radius: var(--radius-medium);
             overflow: hidden;
-            min-width: 0;
+            width: 110px;
+            min-width: 110px;
         }
 
         .day-column.today {
@@ -270,7 +223,6 @@
             color: var(--muted-text);
         }
 
-        /* Shift type colors */
         .shift-card[data-type="am bar"] { border-left-color: #C9A227; }
         .shift-card[data-type="pm bar"] { border-left-color: #8B6914; }
         .shift-card[data-type="server"] { border-left-color: #A68B6B; }
@@ -308,8 +260,7 @@
             50% { opacity: 0.5; }
         }
 
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 3px; }
+        ::-webkit-scrollbar { width: 3px; height: 6px; }
         ::-webkit-scrollbar-track { background: var(--background); }
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
     </style>
@@ -326,15 +277,10 @@
         </div>
     </header>
 
-    <nav class="nav-bar" id="navBar">
-        <button class="nav-btn" id="navLeft" onclick="shiftSchedule(-14)">&#8592; Prev 2 Weeks</button>
-        <span class="date-range" id="dateRange"></span>
-        <button class="nav-btn" id="navRight" onclick="shiftSchedule(14)">Next 2 Weeks &#8594;</button>
-        <button class="nav-btn today-btn" id="todayBtn" onclick="resetToToday()">Today</button>
-    </nav>
-
     <main class="schedule-container">
-        <div class="schedule-grid" id="scheduleGrid"></div>
+        <div class="schedule-scroll" id="scheduleScroll">
+            <div class="schedule-grid" id="scheduleGrid"></div>
+        </div>
     </main>
 
     <footer class="footer">
@@ -346,12 +292,13 @@
         const CONFIG = {
             DATABASE_ID: '2f142fe32264808eb6f2ee89a84b003e',
             API_ENDPOINT: '/api/notion',
-            REFRESH_INTERVAL: 300000
+            REFRESH_INTERVAL: 300000,
+            TOTAL_DAYS: 56
         };
 
         let scheduleData = {};
-        let dayOffset = 0;
         const isIframed = window.self !== window.top;
+        const DISPLAY_DAYS = isIframed ? 14 : CONFIG.TOTAL_DAYS;
 
         function toggleTheme() {
             const html = document.documentElement;
@@ -386,47 +333,6 @@
 
         function formatDate(date) {
             return date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-        }
-
-        function formatRangeShort(date) {
-            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        }
-
-        function getStartDate() {
-            const d = new Date();
-            d.setDate(d.getDate() + dayOffset);
-            return d;
-        }
-
-        function shiftSchedule(days) {
-            dayOffset += days;
-            renderSchedule();
-        }
-
-        function resetToToday() {
-            dayOffset = 0;
-            renderSchedule();
-        }
-
-        function updateNavBar() {
-            if (isIframed) {
-                document.getElementById('navBar').classList.add('hidden');
-                return;
-            }
-
-            const start = getStartDate();
-            const end = new Date(start);
-            end.setDate(start.getDate() + 13);
-            document.getElementById('dateRange').textContent = formatRangeShort(start) + ' – ' + formatRangeShort(end);
-
-            const todayBtn = document.getElementById('todayBtn');
-            if (dayOffset === 0) {
-                todayBtn.classList.add('hidden');
-            } else {
-                todayBtn.classList.remove('hidden');
-            }
-
-            document.getElementById('navLeft').disabled = false;
         }
 
         async function fetchSchedule() {
@@ -491,18 +397,16 @@
         }
 
         function renderSchedule() {
-            if (isIframed) dayOffset = 0;
-
             const grid = document.getElementById('scheduleGrid');
             grid.innerHTML = '';
+            grid.style.gridTemplateColumns = `repeat(${DISPLAY_DAYS}, 110px)`;
 
             const today = new Date();
             const todayKey = getLocalDateKey(today);
-            const startDate = getStartDate();
 
-            for (let i = 0; i < 14; i++) {
-                const date = new Date(startDate);
-                date.setDate(startDate.getDate() + i);
+            for (let i = 0; i < DISPLAY_DAYS; i++) {
+                const date = new Date(today);
+                date.setDate(today.getDate() + i);
                 const dateKey = getLocalDateKey(date);
                 const isToday = dateKey === todayKey;
 
@@ -541,8 +445,36 @@
                     });
                 }
             }
+        }
 
-            updateNavBar();
+        function setupDragScroll() {
+            const el = document.getElementById('scheduleScroll');
+            let isDown = false;
+            let startX;
+            let scrollLeft;
+
+            el.addEventListener('mousedown', (e) => {
+                isDown = true;
+                el.classList.add('active');
+                startX = e.pageX - el.offsetLeft;
+                scrollLeft = el.scrollLeft;
+            });
+
+            el.addEventListener('mouseleave', () => {
+                isDown = false;
+            });
+
+            el.addEventListener('mouseup', () => {
+                isDown = false;
+            });
+
+            el.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - el.offsetLeft;
+                const walk = (x - startX) * 1.5;
+                el.scrollLeft = scrollLeft - walk;
+            });
         }
 
         function updateUI() {
@@ -556,22 +488,10 @@
             updateUI();
             await loadSchedule();
 
-            if (!isIframed) {
-                document.addEventListener('keydown', function(e) {
-                    if (e.key === 'ArrowLeft') shiftSchedule(-14);
-                    if (e.key === 'ArrowRight') shiftSchedule(14);
-                });
-
-                let touchStartX = 0;
-                document.addEventListener('touchstart', function(e) {
-                    touchStartX = e.touches[0].clientX;
-                }, { passive: true });
-                document.addEventListener('touchend', function(e) {
-                    const diff = e.changedTouches[0].clientX - touchStartX;
-                    if (Math.abs(diff) > 80) {
-                        shiftSchedule(diff > 0 ? -14 : 14);
-                    }
-                }, { passive: true });
+            if (isIframed) {
+                document.getElementById('scheduleScroll').classList.add('iframed');
+            } else {
+                setupDragScroll();
             }
         }
 
