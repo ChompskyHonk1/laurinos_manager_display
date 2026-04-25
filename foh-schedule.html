@@ -111,6 +111,69 @@
             color: white;
         }
 
+        .nav-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 6px 0 8px;
+            flex-shrink: 0;
+        }
+
+        .nav-btn {
+            background: var(--card-background);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 5px 14px;
+            border-radius: var(--radius-medium);
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-family: 'Source Sans Pro', sans-serif;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: var(--tertiary-dark);
+            color: white;
+            border-color: var(--tertiary-dark);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.35;
+            cursor: default;
+        }
+
+        .nav-btn.today-btn {
+            background: var(--highlight);
+            color: white;
+            border-color: var(--highlight);
+        }
+
+        .nav-btn.today-btn:hover {
+            opacity: 0.85;
+        }
+
+        .nav-btn.today-btn.hidden {
+            display: none;
+        }
+
+        .date-range {
+            font-size: 0.75rem;
+            color: var(--secondary-dark);
+            font-weight: 600;
+            min-width: 140px;
+            text-align: center;
+            letter-spacing: 0.03em;
+        }
+
+        .nav-bar.hidden {
+            display: none;
+        }
+
         /* Schedule Grid - 14 days */
         .schedule-container {
             flex: 1;
@@ -263,6 +326,13 @@
         </div>
     </header>
 
+    <nav class="nav-bar" id="navBar">
+        <button class="nav-btn" id="navLeft" onclick="shiftSchedule(-14)">&#8592; Prev 2 Weeks</button>
+        <span class="date-range" id="dateRange"></span>
+        <button class="nav-btn" id="navRight" onclick="shiftSchedule(14)">Next 2 Weeks &#8594;</button>
+        <button class="nav-btn today-btn" id="todayBtn" onclick="resetToToday()">Today</button>
+    </nav>
+
     <main class="schedule-container">
         <div class="schedule-grid" id="scheduleGrid"></div>
     </main>
@@ -280,8 +350,9 @@
         };
 
         let scheduleData = {};
+        let dayOffset = 0;
+        const isIframed = window.self !== window.top;
 
-        // Theme
         function toggleTheme() {
             const html = document.documentElement;
             const newTheme = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
@@ -296,7 +367,6 @@
             document.getElementById('themeToggle').textContent = saved === 'dark' ? '☀️ Light' : '🌙 Dark';
         }
 
-        // Date helpers
         function getLocalDateKey(date) {
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -318,7 +388,47 @@
             return date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         }
 
-        // Fetch schedule
+        function formatRangeShort(date) {
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        function getStartDate() {
+            const d = new Date();
+            d.setDate(d.getDate() + dayOffset);
+            return d;
+        }
+
+        function shiftSchedule(days) {
+            dayOffset += days;
+            renderSchedule();
+        }
+
+        function resetToToday() {
+            dayOffset = 0;
+            renderSchedule();
+        }
+
+        function updateNavBar() {
+            if (isIframed) {
+                document.getElementById('navBar').classList.add('hidden');
+                return;
+            }
+
+            const start = getStartDate();
+            const end = new Date(start);
+            end.setDate(start.getDate() + 13);
+            document.getElementById('dateRange').textContent = formatRangeShort(start) + ' – ' + formatRangeShort(end);
+
+            const todayBtn = document.getElementById('todayBtn');
+            if (dayOffset === 0) {
+                todayBtn.classList.add('hidden');
+            } else {
+                todayBtn.classList.remove('hidden');
+            }
+
+            document.getElementById('navLeft').disabled = false;
+        }
+
         async function fetchSchedule() {
             try {
                 const response = await fetch(CONFIG.API_ENDPOINT, {
@@ -373,7 +483,6 @@
                 }
             });
 
-            // Sort shifts by time
             for (const date in scheduleData) {
                 scheduleData[date].sort((a, b) => (a.timeIn || 0) - (b.timeIn || 0));
             }
@@ -382,16 +491,18 @@
         }
 
         function renderSchedule() {
+            if (isIframed) dayOffset = 0;
+
             const grid = document.getElementById('scheduleGrid');
             grid.innerHTML = '';
 
             const today = new Date();
             const todayKey = getLocalDateKey(today);
+            const startDate = getStartDate();
 
-            // Generate 14 days starting from today
             for (let i = 0; i < 14; i++) {
-                const date = new Date(today);
-                date.setDate(today.getDate() + i);
+                const date = new Date(startDate);
+                date.setDate(startDate.getDate() + i);
                 const dateKey = getLocalDateKey(date);
                 const isToday = dateKey === todayKey;
 
@@ -411,7 +522,6 @@
 
                 grid.appendChild(dayColumn);
 
-                // Add shifts
                 const shiftsContainer = dayColumn.querySelector('.day-shifts');
                 const shifts = scheduleData[dateKey] || [];
 
@@ -431,6 +541,8 @@
                     });
                 }
             }
+
+            updateNavBar();
         }
 
         function updateUI() {
@@ -443,6 +555,24 @@
             loadTheme();
             updateUI();
             await loadSchedule();
+
+            if (!isIframed) {
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'ArrowLeft') shiftSchedule(-14);
+                    if (e.key === 'ArrowRight') shiftSchedule(14);
+                });
+
+                let touchStartX = 0;
+                document.addEventListener('touchstart', function(e) {
+                    touchStartX = e.touches[0].clientX;
+                }, { passive: true });
+                document.addEventListener('touchend', function(e) {
+                    const diff = e.changedTouches[0].clientX - touchStartX;
+                    if (Math.abs(diff) > 80) {
+                        shiftSchedule(diff > 0 ? -14 : 14);
+                    }
+                }, { passive: true });
+            }
         }
 
         async function refresh() {
