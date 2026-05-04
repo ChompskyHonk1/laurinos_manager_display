@@ -260,6 +260,40 @@
             50% { opacity: 0.5; }
         }
 
+        .schedule-nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            padding: 6px 0;
+            flex-shrink: 0;
+        }
+
+        .nav-btn {
+            background: var(--card-background);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 4px 12px;
+            border-radius: var(--radius-medium);
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-family: 'Source Sans Pro', sans-serif;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            background: var(--tertiary-dark);
+            color: white;
+        }
+
+        .date-range {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            min-width: 140px;
+            text-align: center;
+        }
+
         ::-webkit-scrollbar { width: 3px; height: 6px; }
         ::-webkit-scrollbar-track { background: var(--background); }
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
@@ -276,6 +310,13 @@
             <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">🌙 Dark</button>
         </div>
     </header>
+
+    <nav class="schedule-nav" id="scheduleNav" style="display: none;">
+        <button class="nav-btn" onclick="scrollSchedule(-14)">&#8249; Prev 2 Weeks</button>
+        <span class="date-range" id="dateRange"></span>
+        <button class="nav-btn" onclick="resetScheduleView()">Today</button>
+        <button class="nav-btn" onclick="scrollSchedule(14)">Next 2 Weeks &#8250;</button>
+    </nav>
 
     <main class="schedule-container">
         <div class="schedule-scroll" id="scheduleScroll">
@@ -297,6 +338,7 @@
         };
 
         let scheduleData = {};
+        let startDateOffset = 0;
         const isIframed = window.self !== window.top;
         const DISPLAY_DAYS = isIframed ? 14 : CONFIG.TOTAL_DAYS;
 
@@ -396,6 +438,16 @@
             renderSchedule();
         }
 
+        function scrollSchedule(delta) {
+            startDateOffset += delta;
+            renderSchedule();
+        }
+
+        function resetScheduleView() {
+            startDateOffset = 0;
+            renderSchedule();
+        }
+
         function renderSchedule() {
             const grid = document.getElementById('scheduleGrid');
             grid.innerHTML = '';
@@ -403,10 +455,23 @@
 
             const today = new Date();
             const todayKey = getLocalDateKey(today);
+            const baseDate = new Date(today);
+            baseDate.setDate(today.getDate() + startDateOffset);
+
+            if (!isIframed) {
+                const endDate = new Date(baseDate);
+                endDate.setDate(baseDate.getDate() + DISPLAY_DAYS - 1);
+                const rangeEl = document.getElementById('dateRange');
+                if (rangeEl) {
+                    const start = baseDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    const end = endDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    rangeEl.textContent = `${start} – ${end}`;
+                }
+            }
 
             for (let i = 0; i < DISPLAY_DAYS; i++) {
-                const date = new Date(today);
-                date.setDate(today.getDate() + i);
+                const date = new Date(baseDate);
+                date.setDate(baseDate.getDate() + i);
                 const dateKey = getLocalDateKey(date);
                 const isToday = dateKey === todayKey;
 
@@ -491,6 +556,7 @@
             if (isIframed) {
                 document.getElementById('scheduleScroll').classList.add('iframed');
             } else {
+                document.getElementById('scheduleNav').style.display = 'flex';
                 setupDragScroll();
             }
         }
