@@ -61,8 +61,7 @@ export default async function handler(req, res) {
       hasMore = data.has_more;
       startCursor = data.next_cursor;
       
-      // Safety limit
-      if (allResults.length >= 1000) {
+      if (allResults.length >= 5000) {
         hasMore = false;
       }
     }
